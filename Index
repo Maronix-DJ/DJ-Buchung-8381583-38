@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Private DJ-Seite</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  margin: 0;
+}
+
+.box {
+  width: 100%;
+  max-width: 500px;
+  background: #1c1c1c;
+  padding: 20px;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+h1, h2 { text-align: center; margin: 0 0 15px; }
+
+input, textarea, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border-radius: 5px;
+  border: none;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+textarea { resize: vertical; min-height: 80px; }
+
+button {
+  background: #00b3ff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.hidden { display: none; }
+.honeypot { display: none; }
+.error { color: #ff6b6b; margin-top: 8px; }
+
+a { color: #00b3ff; word-break: break-all; }
+
+@media (max-width: 600px) {
+  body { padding: 10px; }
+  .box { padding: 15px; }
+  input, textarea, button { font-size: 15px; padding: 10px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="box hidden" id="inviteBlocked">
+  <h2>🚫 Kein Zugriff</h2>
+  <p>Diese Seite ist nur über einen persönlichen Einladungs-Link erreichbar.</p>
+</div>
+
+<div class="box hidden" id="loginBox">
+  <h2>🔒 Geschützter Zugang</h2>
+  <p>Passwort eingeben:</p>
+  <input type="password" id="password" placeholder="Passwort">
+  <button onclick="login()">Login</button>
+  <div class="error" id="loginError"></div>
+</div>
+
+<div class="box hidden" id="content">
+  <h2>🎧 Private DJ-Anfrage</h2>
+
+  <p><strong>Unkostenbeitrag:</strong> 30 € pro Abend</p>
+  <p>
+    Zahlung freiwillig:<br>
+    • bar am Abend<br>
+    • oder vorab per PayPal
+  </p>
+
+  <p>
+    🔗 PayPal:<br>
+    <a href="https://paypal.me/maxgenschel/30" target="_blank">
+      paypal.me/genschel (30 €)
+    </a>
+  </p>
+
+  <form action="https://formspree.io/f/mpqdavyn" method="POST" onsubmit="return checkHoneypot()">
+
+    <input type="text" name="name" placeholder="Name" required>
+    <input type="date" name="datum" required>
+    <textarea name="nachricht" placeholder="Nachricht"></textarea>
+
+    <!-- Honeypot -->
+    <div class="honeypot">
+      <input type="text" id="website" name="website">
+    </div>
+
+    <button type="submit">Anfrage senden</button>
+  </form>
+
+  <p style="font-size:12px;opacity:0.7;margin-top:10px;">
+    Private Nutzung · Freundeskreis · Keine Buchungsplattform
+  </p>
+</div>
+
+<script>
+/* 🔑 Anpassbar */
+const SECRET_KEY = "kfix729Keix";   // Link-Key
+const PASSWORD   = "DJ-Party_";      // Passwort
+
+/* Prüfen, ob Link korrekt ist */
+const params = new URLSearchParams(window.location.search);
+const key = params.get("key");
+
+if (key !== SECRET_KEY) {
+  document.getElementById("inviteBlocked").classList.remove("hidden");
+} else {
+  document.getElementById("loginBox").classList.remove("hidden");
+}
+
+/* Login prüfen */
+function login() {
+  const input = document.getElementById("password").value;
+  if (input === PASSWORD) {
+    document.getElementById("loginBox").classList.add("hidden");
+    document.getElementById("content").classList.remove("hidden");
+  } else {
+    document.getElementById("loginError").innerText = "Falsches Passwort";
+  }
+}
+
+/* Honeypot prüfen */
+function checkHoneypot() {
+  if (document.getElementById("website").value !== "") {
+    return false; // Bot erkannt
+  }
+  return true;
+}
+</script>
+
+</body>
+</html>
